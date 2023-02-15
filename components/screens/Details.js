@@ -7,35 +7,53 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  Share
 } from "react-native";
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 const Details = ({ navigation, item }) => {
-  const addCount=()=>{
-    setCount(Count+1);
+  const addCount = () => {
+    setCount(Count + 1);
     console.log(Count);
-    setPrice(Price+data.Price)
-  }
-  const minusCount=()=>{
-    if(Count==1){
+    setPrice(Price + data.Price);
+  };
+  const minusCount = () => {
+    if (Count == 1) {
       return;
     }
-    setCount(Count-1);
-    setPrice(Price-data.Price)
-  }
+    setCount(Count - 1);
+    setPrice(Price - data.Price);
+  };
+
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message:
+          'npx uri-scheme open "Restaurant-App://Details" --android',
+      });
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+  };
   const data = useRoute().params.item;
   // console.log(data.params.name);
-  const [Count, setCount] = useState(1)
-  const [Price, setPrice] = useState(data.Price)
+  const [Count, setCount] = useState(1);
+  const [Price, setPrice] = useState(data.Price);
   return (
     <View>
       <View style={styles.MainView}>
+        <View style={styles.HeadingView}>
+          <Text style={[styles.HeadingText]}>Details</Text>
+          <TouchableOpacity onPress={()=> onShare()}>
+            <Icon
+              name="share-alt"
+              style={[styles.StarIcon, { color: "#f57167", marginRight: 25 }]}
+            />
+          </TouchableOpacity>
+        </View>
         <ScrollView>
-          <Text style={[styles.HeadingText, { alignSelf: "center" }]}>
-            Details
-          </Text>
           {/* <Image source={data.Image} style={styles.DishImage} /> */}
           <Image source={data.Image} style={styles.DishImage} />
           <Text
@@ -56,16 +74,24 @@ const Details = ({ navigation, item }) => {
               <Icon name="star" style={styles.StarIcon} />
             </View>
             <View style={styles.CountView}>
-              <TouchableOpacity style={styles.OperationView} onPress={()=> minusCount()}>
+              <TouchableOpacity
+                style={styles.OperationView}
+                onPress={() => minusCount()}
+              >
                 <Icon
                   name="minus-square-o"
                   style={[styles.StarIcon, { color: "#f57167" }]}
                 />
               </TouchableOpacity>
-              <View style={[styles.OperationView,{backgroundColor:'#f57167'}]}>
-                <Text style={{fontSize:20,color:'#ffffff'}}>{Count}</Text>
+              <View
+                style={[styles.OperationView, { backgroundColor: "#f57167" }]}
+              >
+                <Text style={{ fontSize: 20, color: "#ffffff" }}>{Count}</Text>
               </View>
-              <TouchableOpacity style={styles.OperationView}  onPress={()=>addCount()}>
+              <TouchableOpacity
+                style={styles.OperationView}
+                onPress={() => addCount()}
+              >
                 <Icon
                   name="plus-square-o"
                   style={[styles.StarIcon, { color: "#83d687" }]}
@@ -78,7 +104,10 @@ const Details = ({ navigation, item }) => {
         </ScrollView>
       </View>
       <View style={styles.BottomView}>
-        <Text style={styles.PriceText}><Text>Rs </Text>{Price}</Text>
+        <Text style={styles.PriceText}>
+          <Text>Rs </Text>
+          {Price}
+        </Text>
         <TouchableOpacity style={styles.AddCartView}>
           <Text style={styles.addCartText}>Add to Cart</Text>
           <Icon
@@ -100,12 +129,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5fbfc",
     alignSelf: "center",
   },
+  HeadingView: {
+    flexDirection: "row",
+    alignItems: "center",
+    // backgroundColor:'red',
+    justifyContent: "space-between",
+  },
   HeadingText: {
     color: "#1B1B1B",
     fontSize: 25,
     fontWeight: "800",
     marginLeft: 15,
     marginTop: 15,
+    marginBottom: 10,
   },
 
   DishImage: {
